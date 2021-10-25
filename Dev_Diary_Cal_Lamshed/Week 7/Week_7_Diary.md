@@ -72,3 +72,44 @@ Two teams and a group of judges.
 All the members of the team share a common purpose of improving the system. after each phase the teams can be brought together to share strategies.
 Capture the flag is a common style of game. The exercise is scored by the number of objectives the attacking team accomplishes and defending team defends.
 
+#### Logging Security Information.
+System monitoring produces massive amounts of data.
+Monitoring technology can be somewhat automated.
+Network or netflow data tells us which systems communicated and the amount of data the exchanged.
+DNS logs tell us which systems may have communicated with external systems.
+System logs let us know about the inner workings of the operating system.
+Application logs tell us similar information about application level workings.
+Authentication logs let us know who may have used the central authentication center, and what internal and external locations they accessed through this server.
+VoIP lets you know about traffic on the network using SIP.
+Dump traffic may also be used.
+Syslog is very important.
+Syslog standard is a simple format.
+Each message has 4 components:
+Header. (timestamp, souce address)
+Facility. 24 bit code that describes where the message came from.
+Severity. importance of the message.
+Message. system that creates the log entry can include information that explains the purpose of the message.
+Severity. 0 is an emergency. 7 is a debug.
+Syslog is supported by all linux servers.
+Syslog forms the core of many security systems.
+syslog-ng added encryption.
+Rsyslog added further enhancments.
+
+Journalctl another system of logs that uses binary.
+Decisions have to be made on how long to keep logs.
+Tagging is also used to hold more information such as the user, and other metadata.
+NXlog is a central log management tool.
+
+#### Security information and even management
+
+Log files are an important secruity system. But their are too many for humans to do the work. So it needs to be automated to computers.
+AI is used to solve security log analysis.
+SIEM:
+Act as a central secure collection point. Stores them security.
+Applys artificial intellegence to find patterns of attack.
+SIEM has access to files from all across the network, so can see the big picture.
+Does something called log coorilation which recognises combinations of activity which indicates a security incident.
+Intrusion detection system:
+A suspicious event which may be an attack triggers the inital event within the SIEM. Then it pulls together other information.
+SIEM consolidates information into a dashboard, which provides admin with a view of the network.
+Soar platforms is a greatly enhanced version of a siem
