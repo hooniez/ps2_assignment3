@@ -112,4 +112,45 @@ Does something called log coorilation which recognises combinations of activity 
 Intrusion detection system:
 A suspicious event which may be an attack triggers the inital event within the SIEM. Then it pulls together other information.
 SIEM consolidates information into a dashboard, which provides admin with a view of the network.
-Soar platforms is a greatly enhanced version of a siem
+Soar platforms is a greatly enhanced version of a siem.
+Uses playbooks or Runbooks. Playbooks require humans while runbooks are completely automated.
+
+#### Code review
+Developers write a log of code each year. Software code is one of the most common security issues.
+Code reviews are one of the most important sofrware testing techniques. Other developers will check peoples code for security issues.
+Fagan inspection is the most formal type of code review. Has 6 steps
+Planning: Preparing materials, identifying participants, schedualing the review
+Overview: 
+Preparation
+Meeting
+Rework
+Follow up
+
+#### Code tests
+Using technology to inspect software.
+Organisations use both code tests and code reviews on the same software.
+Static tests examines the code without running the code.
+Dynammic code test runs the code, and does tests while it runs.
+Synthetic transactions. Testers know what output is expected from the code.
+
+#### Fuzz testing
+Valid and invalid input into software in order to create an unstable state in the code.
+Can be run on Developer supplied input.
+Developer supplied script.
+Or input created by the fuzzing software.
+Mutation fuzzing, where the fuzzing software modifys real input.
+
+#### Misuse case testing
+Users will not always use the software in expected ways. Attackers will not act in an expected matter.
+Hackers will try to force the software to fail.
+In miuse case testing developers try the same software abuses that attackers will try.
+The most critcal step in misuse testing is defining the test cases.
+Testers need to think like attacker, this testing it is often performed in teams.
+Types of missues cases evaluated:
+Unexpected input
+Missing input
+Long input
+Injection attacks
+Unavaible funds
+
+
