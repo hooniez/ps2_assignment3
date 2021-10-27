@@ -22,15 +22,15 @@ Software security depends on secure application platforms.
 Maturity Models help assess an organisation's process maturity
 
 1. The Capability Maturity Model Integration
-  1. Initial
+  - Initial
     * Work gets done but is subject to delays and budget overruns.
-  2. Managed
+  - Managed
     * Various types of mangement (Configuration management, Process and Product quality assurance)
-  3. Defined
+  - Defined
     * Decision analysis and resolution, Organisationsal training
-  4. Quantitively Manged
+  - Quantitively Manged
     * Organisational process performance
-  5. Optimising
+  - Optimising
 
 2. IDEAL Model
   1. Initiating
