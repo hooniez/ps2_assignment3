@@ -5,3 +5,4 @@ from mcpi.minecraft import Minecraft
 
 mc = Minecraft.create()
 mc.postToChat("Hello world")
+mc.setBlock(10,10,10,2)

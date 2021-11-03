@@ -46,10 +46,15 @@ class Connection:
         f = Fernet(key)
         token = f.encrypt(s)
 
+        ## for testing, just encrypting and decryption
+        print(token)
+        print(f.decrypt(token))
         # We need to add encryption here on s. From my understanding that will encrypt all messages
 
+
+
         # self._send(s) ## original
-        self._send(token)
+        self._send(s) # to send the encrypted text change to s -> token
 
     def _send(self, s):
         """
