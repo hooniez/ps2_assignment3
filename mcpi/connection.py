@@ -3,6 +3,10 @@ import select
 import sys
 from .util import flatten_parameters_to_bytestring
 
+### importing fernet functionality
+from cryptography.fernet import Fernet
+
+
 """ @author: Aron Nieminen, Mojang AB"""
 
 class RequestError(Exception):
@@ -37,7 +41,15 @@ class Connection:
         """
 
         s = b"".join([f, b"(", flatten_parameters_to_bytestring(data), b")", b"\n"])
-        self._send(s)
+
+        key = Fernet.generate_key()
+        f = Fernet(key)
+        token = f.encrypt(s)
+
+        # We need to add encryption here on s. From my understanding that will encrypt all messages
+
+        # self._send(s) ## original
+        self._send(token)
 
     def _send(self, s):
         """
