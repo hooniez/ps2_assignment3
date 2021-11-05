@@ -1,29 +1,28 @@
 import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import java.security.Key;
-import java.security.SecureRandom;
-
-
-
+import java.util.Arrays;
 import java.util.Base64;
-
 
 
 public class KeyGen {
 
-    public static Byte[] HMAC(String message, Byte[] key) {
-        final public String algo = "HmacSHA256";
-        Mac mac = Mac.getInstance(algo);
-        SecretKeySpec secretKeySpec = new SecretKeySpec(key, algo);
-        return 
+    public static byte[] HMAC(byte[] message, SecretKeySpec key) {
+        final String algo = "HmacSHA256";
+        byte[] macBytes = null;
+        try {
+            Mac mac = Mac.getInstance(algo);
+            mac.init(key);
+            macBytes = mac.doFinal(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return macBytes;
     }
 
-    public static String encrypt(String message, Key key, IvParameterSpec iv) {
+    public static String encrypt(String message, SecretKeySpec key, IvParameterSpec iv) {
         String cipherText = null;
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -35,12 +34,12 @@ public class KeyGen {
         return cipherText;
     }
 
-    public static String decrypt(String cipherText, Key key, IvParameterSpec iv) {
+    public static String decrypt(byte[] cipherText, SecretKeySpec key, IvParameterSpec iv) {
         String decryptedMsg = null;
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, key, iv);
-            decryptedMsg = new String(cipher.doFinal(Base64.getDecoder().decode(cipherText)));
+            decryptedMsg = new String(cipher.doFinal(cipherText));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -49,18 +48,34 @@ public class KeyGen {
     }
 
     public static void main(String args[]) throws Exception {
-        KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-        keyGenerator.init(128);
-        SecretKey key = keyGenerator.generateKey();
 
-        SecureRandom secRand = new SecureRandom();
-        IvParameterSpec iv = new IvParameterSpec(secRand.generateSeed(16));
+        byte[] key = Base64.getUrlDecoder().decode("1e_zL72nMuNAomwDlWpH9Tc-a8QVwpilX7xe4V-TTkE=");
+        byte[] fToken = Base64.getUrlDecoder().decode("gAAAAABhhI-hlpDqzwbgf93PYj1laIn8yJkYy2mMqoyVORRMHgU4VUcgJLHEoULHh_dx9oIq0xG_-SYvcM3U3w556fqx56ddIvGseHpYfw-vaznprtfKyVg=");
 
-        System.out.println(Base64.getEncoder().encodeToString(key.getEncoded()));
-        String cipherText = encrypt("hello world 1234", key, iv);
-        System.out.println(cipherText);
+        byte[] cipherKeyBytes = Arrays.copyOfRange(key, 16, 32);
+        byte[] signKeyBytes = Arrays.copyOfRange(key, 0, 16);
+        SecretKeySpec signKey = new SecretKeySpec(signKeyBytes, "HmacSHA256");
+        SecretKeySpec cipherKey = new SecretKeySpec(cipherKeyBytes, "AES");
 
-        String finalMsg = decrypt(cipherText, key, iv);
+        byte[] ivBytes = Arrays.copyOfRange(fToken, 9, 25);
+        IvParameterSpec iv = new IvParameterSpec(ivBytes);
+
+        byte[] cipherText = Arrays.copyOfRange(fToken, 25, fToken.length - 32);
+        byte[] TokenHMAC = Arrays.copyOfRange(fToken, fToken.length - 32, fToken.length);
+        byte[] HMACCalc = HMAC(Arrays.copyOfRange(fToken, 0, fToken.length - 32), signKey);
+
+        System.out.print("token mac: ");
+        System.out.println(Base64.getUrlEncoder().encodeToString(TokenHMAC));
+        System.out.print("calc mac: ");
+        System.out.println(Base64.getUrlEncoder().encodeToString(HMACCalc));
+
+        if (Arrays.equals(TokenHMAC, HMACCalc)) {
+            System.out.println("MACs match!");
+        } else {
+            System.out.println("MACs don't match!");
+        }
+
+        String finalMsg = decrypt(cipherText, cipherKey, iv);
         System.out.println(finalMsg);
     }
 }
