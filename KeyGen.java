@@ -2,9 +2,12 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.KeyGenerator;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 import java.security.Key;
 import java.security.SecureRandom;
+
 
 
 import java.util.Base64;
@@ -12,6 +15,13 @@ import java.util.Base64;
 
 
 public class KeyGen {
+
+    public static Byte[] HMAC(String message, Byte[] key) {
+        final public String algo = "HmacSHA256";
+        Mac mac = Mac.getInstance(algo);
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key, algo);
+        return 
+    }
 
     public static String encrypt(String message, Key key, IvParameterSpec iv) {
         String cipherText = null;
