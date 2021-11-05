@@ -2,6 +2,8 @@ import socket
 import select
 import sys
 from .util import flatten_parameters_to_bytestring
+# for AES encoding
+from cryptography.fernet import Fernet
 
 """ @author: Aron Nieminen, Mojang AB"""
 
@@ -40,8 +42,13 @@ class Connection:
 
         s = b"".join([f, b"(", flatten_parameters_to_bytestring(data), b")", b"\n"])
         print(s)
-        self._send(s)
 
+        key = Fernet.generate_key()
+        f = Fernet(key)
+        token = f.encrypt(s)
+
+        # self._send(s) ## Send unencrypted text
+        self._send(token) ## Send encrypted text
     def _send(self, s):
         """
         The actual socket interaction from self.send, extracted for easier mocking
