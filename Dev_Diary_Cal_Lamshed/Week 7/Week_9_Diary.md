@@ -5,4 +5,7 @@ Implemeted the Fernet encyption protocol in the Minecraft API. Checked that the 
 
 ### 4-11-2021:
 Writing phase 2-2 for Assigment three together with Myeonghoon.
-Collecting references used in both Phase 2-1 and Phase 2-2
+Collecting references used in both Phase 2-1 and Phase 2-2.
+
+### 5-11-2021:
+Continued work on Assignment 3 Report, adding new references, improving explination, further research of methods and security.

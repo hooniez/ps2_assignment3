@@ -35,11 +35,8 @@ class Connection:
         The protocol uses CP437 encoding - https://en.wikipedia.org/wiki/Code_page_437
         which is mildly distressing as it can't encode all of Unicode.
         """
-        print(f)
-        print(*data)
 
         s = b"".join([f, b"(", flatten_parameters_to_bytestring(data), b")", b"\n"])
-        print(s)
         self._send(s)
 
     def _send(self, s):
@@ -62,9 +59,4 @@ class Connection:
     def sendReceive(self, *data):
         """Sends and receive data"""
         self.send(*data)
-        return self.receive()
-
-    def sendReceiveTest(self, f, *data):
-        """Sends and receive data"""
-        self.send(f, *data)
         return self.receive()

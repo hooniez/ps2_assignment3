@@ -6,11 +6,6 @@ from .block import Block
 import math
 from .util import flatten
 
-# import for key exchange
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.asymmetric import dh
-from cryptography.hazmat.primitives.kdf.hkdf import HKDF
-
 """ Minecraft PI low level api v0.1_1
 
     Note: many methods have the parameter *arg. This solution makes it
@@ -376,16 +371,6 @@ class Minecraft:
         """Remove entities all currently loaded Entities by type (typeId:int) => (removedEntitiesCount:int)"""
         return int(self.conn.sendReceive(b"world.removeEntities", typeId))
 
-    def test(self):
-        # Generate some parameters. These can be reused.
-        parameters = dh.generate_parameters(generator=2, key_size=2048)
-        # Generate a private key for use in the exchange.
-        p = parameters.parameter_numbers().p # the prime modulus value
-        g = parameters.parameter_numbers().g # the generator value (must be 2 or greater)
-        data = (p, g)
-        reply = self.conn.sendReceiveTest(b"test", data)
-        print(reply)
-
     @staticmethod
     def create(address = "localhost", port = 4711):
         return Minecraft(Connection(address, port))
@@ -393,5 +378,4 @@ class Minecraft:
 
 if __name__ == "__main__":
     mc = Minecraft.create()
-    mc.test()
-    
+    mc.postToChat("Hello, Minecraft!")
