@@ -31,6 +31,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
+import net.zhuoweizhang.raspberryjuice.Verifier;
+
 import java.security.MessageDigest;
 import java.util.Base64;
 
@@ -49,6 +51,8 @@ public class RemoteSession {
 	private BigInteger shared_key;
 
 	private byte[] symmetric_key;
+
+	private Verifier verifier;
 
 	private static final SecureRandom random = new SecureRandom();
 
@@ -179,20 +183,27 @@ public class RemoteSession {
 	}
 
 	protected void handleLine(String line) {
-		
+		if (symmetric_key != null) {
+			byte[] lineBytes = Base64.getDecoder().decode(line);
+			line = verifier.messageHandler(symmetric_key, lineBytes);
+		}
 		//System.out.println(line);
 		String methodName = line.substring(0, line.indexOf("("));
 		//split string into args, handles , inside " i.e. ","
 		String[] args = line.substring(line.indexOf("(") + 1, line.length() - 1).split(",");		
 		//System.out.println(methodName + ":" + Arrays.toString(args));
+
+		if ((symmetric_key == null) && (!methodName.equals("client_key_exchange"))) {
+			System.out.println("Please establish the secure connection before sending commands");
+			return;
+		}
+
 		handleCommand(methodName, args);
+		
 	}
 
 	protected void handleCommand(String c, String[] args) {
-		if ((symmetric_key == null) && (!c.equals("client_key_exchange"))) {
-			System.out.println("Please establish the secure connection before sendning commands");
-			return;
-		}
+
 		try {
 			// get the server
 			Server server = plugin.getServer();
