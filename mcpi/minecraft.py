@@ -383,8 +383,13 @@ class Minecraft:
         p = parameters.parameter_numbers().p # the prime modulus value
         g = parameters.parameter_numbers().g # the generator value (must be 2 or greater)
         data = (p, g)
-        reply = self.conn.sendReceiveTest(b"test", data)
-        print(reply)
+        b = int(self.conn.sendReceiveTest(b"client_hello", data)) # Server public value
+        a_private_key = parameters.generate_private_key() # Client secret number
+        a = a_private_key.private_numbers().x
+        shared_key = pow(b, a, p)
+        g_pow_a_mod_p = a_private_key.public_key().public_numbers().y
+        self.conn.send(b"client_key_exchange", g_pow_a_mod_p)
+
 
     @staticmethod
     def create(address = "localhost", port = 4711):

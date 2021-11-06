@@ -5,6 +5,10 @@ from .util import flatten_parameters_to_bytestring
 # for AES encoding
 from cryptography.fernet import Fernet
 
+### importing fernet functionality
+from cryptography.fernet import Fernet
+
+
 """ @author: Aron Nieminen, Mojang AB"""
 
 class RequestError(Exception):
@@ -37,11 +41,26 @@ class Connection:
         The protocol uses CP437 encoding - https://en.wikipedia.org/wiki/Code_page_437
         which is mildly distressing as it can't encode all of Unicode.
         """
-        print(f)
-        print(*data)
 
         s = b"".join([f, b"(", flatten_parameters_to_bytestring(data), b")", b"\n"])
+<<<<<<< Updated upstream
         print(s)
+=======
+
+        key = Fernet.generate_key()
+        f = Fernet(key)
+        token = f.encrypt(s)
+
+        ## for testing, just encrypting and decryption
+        print(token)
+        print(f.decrypt(token))
+        # We need to add encryption here on s. From my understanding that will encrypt all messages
+
+
+
+        # self._send(s) ## original
+        self._send(s) # to send the encrypted text change to s -> token
+>>>>>>> Stashed changes
 
         key = Fernet.generate_key()
         f = Fernet(key)
@@ -69,9 +88,4 @@ class Connection:
     def sendReceive(self, *data):
         """Sends and receive data"""
         self.send(*data)
-        return self.receive()
-
-    def sendReceiveTest(self, f, *data):
-        """Sends and receive data"""
-        self.send(f, *data)
         return self.receive()
