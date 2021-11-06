@@ -31,10 +31,10 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
-import java.security.Provider;
+import java.security.MessageDigest;
+import java.util.Base64;
 
 public class RemoteSession {
-	private final Provider provider;
 
 	public BigInteger p; // modulus
 
@@ -47,6 +47,8 @@ public class RemoteSession {
 	public BigInteger g_pow_a_mod_p;
 
 	private BigInteger shared_key;
+
+	private byte[] symmetric_key;
 
 	private static final SecureRandom random = new SecureRandom();
 
@@ -101,7 +103,6 @@ public class RemoteSession {
 		this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
 		startThreads();
 		plugin.getLogger().info("Opened connection to" + socket.getRemoteSocketAddress() + ".");
-
 		
 	}
 
@@ -178,6 +179,10 @@ public class RemoteSession {
 	}
 
 	protected void handleLine(String line) {
+<<<<<<< Updated upstream
+=======
+		// Decryption
+>>>>>>> Stashed changes
 		
 		//System.out.println(line);
 		String methodName = line.substring(0, line.indexOf("("));
@@ -188,7 +193,10 @@ public class RemoteSession {
 	}
 
 	protected void handleCommand(String c, String[] args) {
-		
+		if ((symmetric_key == null) && (!c.equals("client_key_exchange"))) {
+			System.out.println("Please establish the secure connection before sendning commands");
+			return;
+		}
 		try {
 			// get the server
 			Server server = plugin.getServer();
@@ -336,19 +344,14 @@ public class RemoteSession {
 				shared_key = g_pow_a_mod_p.modPow(b, p);
 
 				String shared_key_str = shared_key.toString();
-				byte[] shared_key_byte_arr = shared_key_str.getBytes();
-				System.out.println("Shared_key_bytes are " + new String(shared_key_byte_arr, StandardCharsets.UTF_8));
+				// byte[] shared_key_byte_arr = shared_key_str.getBytes();
+				System.out.println("Shared_key is" + shared_key_str);
 
+				MessageDigest digest = MessageDigest.getInstance("SHA-256");
+				symmetric_key = digest.digest(shared_key_str.getBytes(StandardCharsets.UTF_8));	
 
+				System.out.println(Base64.getUrlEncoder().encodeToString(symmetric_key));
 
-				// byte[] pseudoRandomKey = hkdf.extract(salt, shared_key_byte_arr);
-				// byte[] derived_key = hkdf.expand(pseudoRandomKey, null, 32);
-
-				// BigInteger bi = new BigInteger(derived_key);
-				// String s = bi.toString();
-
-				// System.out.println(s);
-			
 
 
 			// events.clear

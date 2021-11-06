@@ -42,25 +42,10 @@ class Connection:
         which is mildly distressing as it can't encode all of Unicode.
         """
 
+
+
         s = b"".join([f, b"(", flatten_parameters_to_bytestring(data), b")", b"\n"])
-<<<<<<< Updated upstream
         print(s)
-=======
-
-        key = Fernet.generate_key()
-        f = Fernet(key)
-        token = f.encrypt(s)
-
-        ## for testing, just encrypting and decryption
-        print(token)
-        print(f.decrypt(token))
-        # We need to add encryption here on s. From my understanding that will encrypt all messages
-
-
-
-        # self._send(s) ## original
-        self._send(s) # to send the encrypted text change to s -> token
->>>>>>> Stashed changes
 
         key = Fernet.generate_key()
         f = Fernet(key)

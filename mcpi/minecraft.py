@@ -387,8 +387,15 @@ class Minecraft:
         a_private_key = parameters.generate_private_key() # Client secret number
         a = a_private_key.private_numbers().x
         shared_key = pow(b, a, p)
-        g_pow_a_mod_p = a_private_key.public_key().public_numbers().y
+        g_pow_a_mod_p = a_private_key.public_key().public_numbers().y # Public value to send to the server
         self.conn.send(b"client_key_exchange", g_pow_a_mod_p)
+
+        # Reduce the length of the shared key from DH using SHA-256
+        digest = hashes.Hash(hashes.SHA256())
+        digest.update(str.encode(str(shared_key)))
+        symmetric_key = digest.finalize()
+
+        print(int.from_bytes(symmetric_key, "little"))
 
 
     @staticmethod
