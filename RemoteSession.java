@@ -179,10 +179,6 @@ public class RemoteSession {
 	}
 
 	protected void handleLine(String line) {
-<<<<<<< Updated upstream
-=======
-		// Decryption
->>>>>>> Stashed changes
 		
 		//System.out.println(line);
 		String methodName = line.substring(0, line.indexOf("("));
