@@ -10,6 +10,7 @@ import java.util.Base64;
 
 
 public class Verifier {
+    
 
     private static byte[] HMAC(byte[] message, SecretKeySpec key) {
         final String algo = "HmacSHA256";
@@ -37,7 +38,10 @@ public class Verifier {
         return decryptedMsg;
     }
 
+
+
     public static String messageHandler(byte[] sharedKey, byte[] token) {
+        String finalMsg = null;
         byte[] cipherKeyBytes = Arrays.copyOfRange(sharedKey, 16, 32);
         byte[] signKeyBytes = Arrays.copyOfRange(sharedKey, 0, 16);
         SecretKeySpec signKey = new SecretKeySpec(signKeyBytes, "HmacSHA256");
@@ -53,8 +57,8 @@ public class Verifier {
         if (!Arrays.equals(TokenHMAC, HMACCalc)) {
             System.out.println("message cannot be verified");
         } else {
-            String finalMsg = decrypt(cipherText, cipherKey, iv);
-            return finalMsg;
+            finalMsg = decrypt(cipherText, cipherKey, iv);
         }
+        return finalMsg;
     }
 }

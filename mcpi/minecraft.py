@@ -6,10 +6,8 @@ from .block import Block
 import math
 from .util import flatten
 
-# import for key exchange
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.asymmetric import dh
-from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+
+
 
 """ Minecraft PI low level api v0.1_1
 
@@ -27,7 +25,7 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 - getBlocks()
 - getDirection()
 - getPitch()
-- getRotation()
+- getRotation()Pa
 - getPlayerEntityId()
 - pollChatPosts()
 - setSign()
@@ -286,6 +284,7 @@ class Minecraft:
         self.entity = CmdEntity(connection)
         self.player = CmdPlayer(connection)
         self.events = CmdEvents(connection)
+        self.conn.get_shared_key()
 
     def getBlock(self, *args):
         """Get block (x,y,z) => id:int"""
@@ -375,28 +374,20 @@ class Minecraft:
     def removeEntities(self, typeId=-1):
         """Remove entities all currently loaded Entities by type (typeId:int) => (removedEntitiesCount:int)"""
         return int(self.conn.sendReceive(b"world.removeEntities", typeId))
+        
 
-    def test(self):
-        # Generate some parameters. These can be reused.
-        parameters = dh.generate_parameters(generator=2, key_size=2048)
-        # Generate a private key for use in the exchange.
-        p = parameters.parameter_numbers().p # the prime modulus value
-        g = parameters.parameter_numbers().g # the generator value (must be 2 or greater)
-        data = (p, g)
-        b = int(self.conn.sendReceiveTest(b"client_hello", data)) # Server public value
-        a_private_key = parameters.generate_private_key() # Client secret number
-        a = a_private_key.private_numbers().x
-        shared_key = pow(b, a, p)
-        g_pow_a_mod_p = a_private_key.public_key().public_numbers().y # Public value to send to the server
-        self.conn.send(b"client_key_exchange", g_pow_a_mod_p)
+        
+        
+        
 
-        # Reduce the length of the shared key from DH using SHA-256
-        digest = hashes.Hash(hashes.SHA256())
-        digest.update(str.encode(str(shared_key)))
-        symmetric_key = digest.finalize()
 
-        print(int.from_bytes(symmetric_key, "little"))
+        
 
+
+
+
+
+        
 
     @staticmethod
     def create(address = "localhost", port = 4711):

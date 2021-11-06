@@ -52,8 +52,6 @@ public class RemoteSession {
 
 	private byte[] symmetric_key;
 
-	private Verifier verifier;
-
 	private static final SecureRandom random = new SecureRandom();
 
 	private final LocationType locationType;
@@ -183,9 +181,14 @@ public class RemoteSession {
 	}
 
 	protected void handleLine(String line) {
-		if (symmetric_key != null) {
-			byte[] lineBytes = Base64.getDecoder().decode(line);
-			line = verifier.messageHandler(symmetric_key, lineBytes);
+		System.out.println(line);
+		
+		if (this.symmetric_key != null) {
+			System.out.println(Base64.getUrlEncoder().encode(this.symmetric_key));
+			byte[] lineBytes = Base64.getUrlDecoder().decode(line);
+			line = Verifier.messageHandler(this.symmetric_key, lineBytes);
+			
+			
 		}
 		//System.out.println(line);
 		String methodName = line.substring(0, line.indexOf("("));
@@ -193,10 +196,10 @@ public class RemoteSession {
 		String[] args = line.substring(line.indexOf("(") + 1, line.length() - 1).split(",");		
 		//System.out.println(methodName + ":" + Arrays.toString(args));
 
-		if ((symmetric_key == null) && (!methodName.equals("client_key_exchange"))) {
-			System.out.println("Please establish the secure connection before sending commands");
-			return;
-		}
+		// if ((this.symmetric_key == null) && (!methodName.equals("client_key_exchange") || (!methodName.equals("client_hello")))) {
+		// 	System.out.println("Please establish the secure connection before sending commands");
+		// 	return;
+		// }
 
 		handleCommand(methodName, args);
 		
@@ -355,9 +358,9 @@ public class RemoteSession {
 				System.out.println("Shared_key is" + shared_key_str);
 
 				MessageDigest digest = MessageDigest.getInstance("SHA-256");
-				symmetric_key = digest.digest(shared_key_str.getBytes(StandardCharsets.UTF_8));	
+				this.symmetric_key = digest.digest(shared_key_str.getBytes(StandardCharsets.UTF_8));	
 
-				System.out.println(Base64.getUrlEncoder().encodeToString(symmetric_key));
+				System.out.println(Base64.getUrlEncoder().encodeToString(this.symmetric_key));
 
 
 
