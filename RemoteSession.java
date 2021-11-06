@@ -1,11 +1,15 @@
 package net.zhuoweizhang.raspberryjuice;
 
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.math.BigInteger;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Iterator;
@@ -27,7 +31,24 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
+import java.security.Provider;
+
 public class RemoteSession {
+	private final Provider provider;
+
+	public BigInteger p; // modulus
+
+	public BigInteger g; // generator
+
+	private BigInteger b; // private number
+
+	public BigInteger g_pow_b_mod_p;
+
+	public BigInteger g_pow_a_mod_p;
+
+	private BigInteger shared_key;
+
+	private static final SecureRandom random = new SecureRandom();
 
 	private final LocationType locationType;
 
@@ -284,13 +305,50 @@ public class RemoteSession {
 				chatMessage = chatMessage.substring(0, chatMessage.length() - 1);
 				server.broadcastMessage(chatMessage);
 
-			} else if (c.equals("test")) {
-				int p = Integer.parseInt(args[0]);  
-				int g = Integer.parseInt(args[1]);
-				// plugin.getLogger().info(args[0] + " " + args[1]);
+			} else if (c.equals("client_hello")) {
+				p = new BigInteger(args[0]); // the prime modulus value
+				
+				// BigInteger q = new BigInteger(args[1]);
+				g = new BigInteger(args[1]); // the generator value (must be 2 or greater) 
 
-				String testMessage = "test successful";
-				send(testMessage);
+				// Generate a secret random number
+				byte b1[];
+				b1 = p.toByteArray();
+				int length = b1.length;
+				 
+				int min_num_int = 2;
+				BigInteger min_num = BigInteger.valueOf(min_num_int);
+				
+				do {
+					byte bytes[] = new byte[length];
+					random.nextBytes(bytes);
+					b = new BigInteger(bytes);
+				} while ((b.compareTo(min_num) == -1) || (b.compareTo(p) == 0) || (b.compareTo(p) == 1)); // Ensure 1 < b < p
+				
+				// Creates a public value to send to the server
+				g_pow_b_mod_p = g.modPow(b, p);
+				
+				send(g_pow_b_mod_p);
+
+			} else if (c.equals("client_key_exchange")) {
+				g_pow_a_mod_p = new BigInteger(args[0]); // the prime modulus value
+
+				shared_key = g_pow_a_mod_p.modPow(b, p);
+
+				String shared_key_str = shared_key.toString();
+				byte[] shared_key_byte_arr = shared_key_str.getBytes();
+				System.out.println("Shared_key_bytes are " + new String(shared_key_byte_arr, StandardCharsets.UTF_8));
+
+
+
+				// byte[] pseudoRandomKey = hkdf.extract(salt, shared_key_byte_arr);
+				// byte[] derived_key = hkdf.expand(pseudoRandomKey, null, 32);
+
+				// BigInteger bi = new BigInteger(derived_key);
+				// String s = bi.toString();
+
+				// System.out.println(s);
+			
 
 
 			// events.clear
@@ -1099,10 +1157,5 @@ public class RemoteSession {
 	// 	KeyFactory kf = KeyFactory.getInstance("RSA");
 	// 	return kf.generatePrivate(spec);
 	// }
-
-    
-
-    
-  }
 
 }
