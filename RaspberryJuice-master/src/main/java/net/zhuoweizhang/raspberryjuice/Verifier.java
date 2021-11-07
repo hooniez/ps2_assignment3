@@ -20,7 +20,7 @@ public class Verifier {
             mac.init(key);
             macBytes = mac.doFinal(message);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Unable to create HMAC");
         }
         return macBytes;
     }
@@ -32,7 +32,7 @@ public class Verifier {
             cipher.init(Cipher.DECRYPT_MODE, key, iv);
             decryptedMsg = new String(cipher.doFinal(cipherText));
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Unable to decrpyt the message. Please double check the secret key.");
         }
 
         return decryptedMsg;
