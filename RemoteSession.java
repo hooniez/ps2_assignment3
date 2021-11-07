@@ -329,6 +329,14 @@ public class RemoteSession {
 				// BigInteger q = new BigInteger(args[1]);
 				g = new BigInteger(args[1]); // the generator value (must be 2 or greater) 
 
+
+
+				// THIS CHECK MAY BE NEEDED, IS p always being sent as: p > 1
+				// // Cal's code
+				// // p should always be:  p > 1
+				// p = p.abs();
+				// // End Cal's code
+
 				// Generate a secret random number
 				byte b1[];
 				b1 = p.toByteArray();
@@ -341,7 +349,14 @@ public class RemoteSession {
 					byte bytes[] = new byte[length];
 					random.nextBytes(bytes);
 					b = new BigInteger(bytes);
-				} while ((b.compareTo(min_num) == -1) || (b.compareTo(p) == 0) || (b.compareTo(p) == 1)); // Ensure 1 < b < p
+					
+					// Cal's code
+					// b should always be: b > 1
+					b = b.abs();
+					// End Cal's code
+					
+					// Cal's code, rearrange the order of checks to take advantage of short-circut
+				} while ((b.compareTo(p) == 1) || (b.compareTo(p) == 0) || (b.compareTo(min_num) == -1)); // Ensure 1 < b < p
 				
 				// Creates a public value to send to the server
 				g_pow_b_mod_p = g.modPow(b, p);
