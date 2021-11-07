@@ -370,8 +370,7 @@ public class RemoteSession {
 				b = new BigInteger(bytes);
 				// Change negative b Values
 				b = b.abs();
-
-				// OLD WHILE LOOP // while ((b.compareTo(p) == 1) || (b.compareTo(p) == 0) || (b.compareTo(min_num) == -1)); // Ensure 1 < b < p
+				
 				// Creates a public value to send to the server
 				g_pow_b_mod_p = g.modPow(b, p);
 				send(g_pow_b_mod_p);
