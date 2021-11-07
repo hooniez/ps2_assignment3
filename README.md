@@ -12,5 +12,7 @@ This is the README file for Assignment 3 in Programming Studio 2 (COSC2804).
 # 2. The client MCPI library changes, Located in:
  - [connection.py](/mcpi/connection.py)
  - [minecraft.py](/mcpi/minecraft.py)
+# 3. Demonstration Video
+ - [Video](https://rmiteduau-my.sharepoint.com/:v:/g/personal/s3888349_student_rmit_edu_au/ERb2z-vJn99Pp8AQDzP-V4QBR_6pKC3lTQvk56Apn2z25Q?e=MXpJs5)
 
 You can [modify your Dev Diary here](DEVDIARY.md)
