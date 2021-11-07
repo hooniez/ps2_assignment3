@@ -7,10 +7,10 @@ This is the README file for Assignment 3 in Programming Studio 2 (COSC2804).
  - Assignment_3_Report/Assignment_3_Report.pdf
 # Code
 # 1.The Raspberry Juice plugin changes, Located in
- - (/RaspberryJuice-master/src/main/java/RemoteSession.java)
- - (/RaspberryJuice-master/src/main/java/Verifier.java)
+ - [RemoteSession.java](RaspberryJuice-master/src/main/java/net/zhuoweizhang/raspberryjuice/RemoteSession.java)
+ - [Verifier.java](RaspberryJuice-master/src/main/java/net/zhuoweizhang/raspberryjuice/Verifier.java)
 # 2. The client MCPI library changes, Located in:
- - (/mcpi/connection.py)
- - (/mcpi/minecraft.py)
+ - [connection.py](/mcpi/connection.py)
+ - [minecraft.py](/mcpi/minecraft.py)
 
 You can [modify your Dev Diary here](DEVDIARY.md)

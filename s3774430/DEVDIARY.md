@@ -106,5 +106,3 @@ Maturity Models help assess an organisation's process maturity
 ### SC2: Participation activity: SQL Injection Attack
 
 The example code is vulnerable to SQL injection attacks to extract sensitive information, inject malicious code, and worse yet, delete data. 
-
-## Week 8 - Workshop
