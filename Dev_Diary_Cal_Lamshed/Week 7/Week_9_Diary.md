@@ -15,4 +15,4 @@ Work on report section of assigment 3. Work with team on code implementation via
 
 ### 7-11-2021:
 Work on finalising report section of assigment 3. Work with team on code implementation via voice chat.
-Record vide0.
+Record assignment video.
