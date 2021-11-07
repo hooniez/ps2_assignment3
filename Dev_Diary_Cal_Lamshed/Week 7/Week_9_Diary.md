@@ -9,3 +9,10 @@ Collecting references used in both Phase 2-1 and Phase 2-2.
 
 ### 5-11-2021:
 Continued work on Assignment 3 Report, adding new references, improving explination, further research of methods and security.
+
+### 6-11-2021:
+Work on report section of assigment 3. Work with team on code implementation via voice chat.
+
+### 7-11-2021:
+Work on finalising report section of assigment 3. Work with team on code implementation via voice chat.
+Record vide0.
