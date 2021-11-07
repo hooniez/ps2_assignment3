@@ -30,13 +30,14 @@ Please, report your key activities in each week this assignment is running.
     * Implemented Hellow Minecraft!
 
 **Week 8**
-
-.....
-.....
-.....
-
+* Cal Lamshed, S3706239:
+    * Research of Techniques
+    * Report first draft
+    * Collecting references
 **Week 9**
-
+* Cal Lamshed, S3706239:
+    * Wrote final Report
+    * Team coding
 .....
 .....
 .....

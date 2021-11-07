@@ -2,4 +2,15 @@
 # Minecraft Scure API
 This is the README file for Assignment 3 in Programming Studio 2 (COSC2804).
 
+
+# Report can be found:
+    Assignment_3_Report
+# Code
+# 1.The Raspberry Juice plugin changes, Located in
+ - RaspberryJuice-master/
+# 2. The client MCPI library changes, Located in:
+ - mcpi/connection.py
+
+
+
 You can [modify your Dev Diary here](DEVDIARY.md)
