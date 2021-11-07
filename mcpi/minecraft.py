@@ -284,7 +284,7 @@ class Minecraft:
         self.entity = CmdEntity(connection)
         self.player = CmdPlayer(connection)
         self.events = CmdEvents(connection)
-        self.conn.get_shared_key()
+        self.shared_key = self.conn.get_shared_key()
 
     def getBlock(self, *args):
         """Get block (x,y,z) => id:int"""
@@ -349,7 +349,16 @@ class Minecraft:
 
     def postToChat(self, msg):
         """Post a message to the game chat"""
-        self.conn.send(b"chat.post", msg)
+        encrypted_msg = self.conn.sendReceive(b"chat.post", msg)
+        print(encrypted_msg)
+
+
+        # self.conn.send(b"chat.post", msg)
+
+        # encrypted_msg = self.conn.sendReceive(b"chat.post", msg)
+        
+
+        # print(encrypted_msg)
 
     def setting(self, setting, status):
         """Set a world setting (setting, status). keys: world_immutable, nametags_visible"""
