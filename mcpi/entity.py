@@ -1,144 +1,102 @@
-import socket
-import select
-import sys
-from .util import flatten_parameters_to_bytestring
+class Entity:
+    '''Minecraft PI entity description. Can be sent to Minecraft.spawnEntity'''
 
-import base64
-# import for key exchange
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.asymmetric import dh
-from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+    def __init__(self, id, name = None):
+        self.id = id
+        self.name = name
 
-from cryptography.fernet import Fernet
+    def __cmp__(self, rhs):
+        return hash(self) - hash(rhs)
 
-""" @author: Aron Nieminen, Mojang AB"""
+    def __eq__(self, rhs):
+        return self.id == rhs.id
 
-class RequestError(Exception):
-    pass
+    def __hash__(self):
+        return self.id
 
-class Connection:
-    """Connection to a Minecraft Pi game"""
-    RequestFailed = "Fail"
+    def __iter__(self):
+        '''Allows an Entity to be sent whenever id is needed'''
+        return iter((self.id,))
 
-    def __init__(self, address, port):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.connect((address, port))
-        self.shared_key = None
-        self.lastSent = ""
+    def __repr__(self):
+        return 'Entity(%d)'%(self.id)
 
-    def get_shared_key(self):
-        # Generate some parameters. These can be reused.
-        parameters = dh.generate_parameters(generator=2, key_size=2048)
-        # Generate a private key for use in the exchange.
-        p = parameters.parameter_numbers().p # The prime modulus value
-        g = parameters.parameter_numbers().g # The generator value (must be 2 or greater)
-        a_private_key = parameters.generate_private_key() # Client secret key
-        a = a_private_key.private_numbers().x # Client secret number
-        g_pow_a_mod_p = a_private_key.public_key().public_numbers().y # Client public number
-        data = (p, g, g_pow_a_mod_p)
-
-        b = int(self.sendReceive(b"dh_key_exchange", data)) # Server public value
-
-        shared_key = pow(b, a, p)
-
-        # SHA256 to make the length of the shared key most optimal
-        digest = hashes.Hash(hashes.SHA256())
-        digest.update(str(shared_key).encode())
-        symmetric_key = digest.finalize()
-
-        self.shared_key = base64.urlsafe_b64encode(symmetric_key)
-
-        
-
-        # server_msg = self.sendReceive(b"chat.post", "hello")
-        # print(server_msg)
-
-        # self.sendReceiveDH(b"client_key_exchange", g_pow_a_mod_p)
-
-        # # Reduce the length of the shared key from DH using SHA-256
-        
-
-        # # print("Shared_key_bytes are" + str(symmetric_key))
-
-        
-
-        
-
-
-        return self.shared_key
-
-
-    def drain(self):
-        """Drains the socket of incoming data"""
-        while True:
-            readable, _, _ = select.select([self.socket], [], [], 0.0)
-            if not readable:
-                break
-            data = self.socket.recv(1500)
-            e =  "Drained Data: <%s>\n"%data.strip()
-            e += "Last Message: <%s>\n"%self.lastSent.strip()
-            sys.stderr.write(e)
-
-    def sendEncrypted(self, f, *data):
-        """
-        Sends data. Note that a trailing newline '\n' is added here
-
-        The protocol uses CP437 encoding - https://en.wikipedia.org/wiki/Code_page_437
-        which is mildly distressing as it can't encode all of Unicode.
-        """
-        # Use the shared key from DH hasehd with SHA-256 to encrypt a message
-
-        
-
-        s = b"".join([f, b"(", flatten_parameters_to_bytestring(data), b")", b"39490830", b"\n"])
-
-        f = Fernet(self.shared_key)
-        token = f.encrypt(s)
-
-        self._send(token)
-
-    def _send(self, s):
-        """
-        The actual socket interaction from self.send, extracted for easier mocking
-        and testing
-        """
-        self.drain()
-        self.lastSent = s
-
-        self.socket.sendall(s)
-
-    def receive(self):
-        """Receives data. Note that the trailing newline '\n' is trimmed"""
-        s = self.socket.makefile("r").readline().rstrip("\n")
-        if s == Connection.RequestFailed:
-            raise RequestError("%s failed"%self.lastSent.strip())
-        return s
-
-    def receiveEncryptedMsg(self):
-        """Receives data. Note that the trailing newline '\n' is trimmed"""
-        self.socket.settimeout(50)
-        print(self.socket.recv(4096))
-
-    def sendReceiveEncrypted(self, f, *data):
-        """Sends and receive data"""
-        self.sendEncrypted(f, *data)
-        return self.receive()
-
-    def send(self, f, *data):
-         """
-         Establishes a TLS 1.2 like connection (HelloClient, ClientKeyExchange) 
-         but mostly limited to the use of Diffie Hellman as the name suggests. 
-         """
-
-         s = b"".join([f, b"(", flatten_parameters_to_bytestring(data), b")", b"\n"])
-         self._send(s)
-
-    def sendReceive(self, f, *data):
-        """Sends any data needed to establish an initial connection and receive data from the sesrver"""
-        self.send(f, *data)
-        return self.receive()
-
-    def sendReceiveMsg(self, f, *data):
-        """Sends and receive data"""
-        self.send(f, *data)
-        return self.receiveEncryptedMsg()
+EXPERIENCE_ORB = Entity(2, "EXPERIENCE_ORB")
+AREA_EFFECT_CLOUD = Entity(3, "AREA_EFFECT_CLOUD")
+ELDER_GUARDIAN = Entity(4, "ELDER_GUARDIAN")
+WITHER_SKELETON = Entity(5, "WITHER_SKELETON")
+STRAY = Entity(6, "STRAY")
+EGG = Entity(7, "EGG")
+LEASH_HITCH = Entity(8, "LEASH_HITCH")
+PAINTING = Entity(9, "PAINTING")
+ARROW = Entity(10, "ARROW")
+SNOWBALL = Entity(11, "SNOWBALL")
+FIREBALL = Entity(12, "FIREBALL")
+SMALL_FIREBALL = Entity(13, "SMALL_FIREBALL")
+ENDER_PEARL = Entity(14, "ENDER_PEARL")
+ENDER_SIGNAL = Entity(15, "ENDER_SIGNAL")
+THROWN_EXP_BOTTLE = Entity(17, "THROWN_EXP_BOTTLE")
+ITEM_FRAME = Entity(18, "ITEM_FRAME")
+WITHER_SKULL = Entity(19, "WITHER_SKULL")
+PRIMED_TNT = Entity(20, "PRIMED_TNT")
+HUSK = Entity(23, "HUSK")
+SPECTRAL_ARROW = Entity(24, "SPECTRAL_ARROW")
+SHULKER_BULLET = Entity(25, "SHULKER_BULLET")
+DRAGON_FIREBALL = Entity(26, "DRAGON_FIREBALL")
+ZOMBIE_VILLAGER = Entity(27, "ZOMBIE_VILLAGER")
+SKELETON_HORSE = Entity(28, "SKELETON_HORSE")
+ZOMBIE_HORSE = Entity(29, "ZOMBIE_HORSE")
+ARMOR_STAND = Entity(30, "ARMOR_STAND")
+DONKEY = Entity(31, "DONKEY")
+MULE = Entity(32, "MULE")
+EVOKER_FANGS = Entity(33, "EVOKER_FANGS")
+EVOKER = Entity(34, "EVOKER")
+VEX = Entity(35, "VEX")
+VINDICATOR = Entity(36, "VINDICATOR")
+ILLUSIONER = Entity(37, "ILLUSIONER")
+MINECART_COMMAND = Entity(40, "MINECART_COMMAND")
+BOAT = Entity(41, "BOAT")
+MINECART = Entity(42, "MINECART")
+MINECART_CHEST = Entity(43, "MINECART_CHEST")
+MINECART_FURNACE = Entity(44, "MINECART_FURNACE")
+MINECART_TNT = Entity(45, "MINECART_TNT")
+MINECART_HOPPER = Entity(46, "MINECART_HOPPER")
+MINECART_MOB_SPAWNER = Entity(47, "MINECART_MOB_SPAWNER")
+CREEPER = Entity(50, "CREEPER")
+SKELETON = Entity(51, "SKELETON")
+SPIDER = Entity(52, "SPIDER")
+GIANT = Entity(53, "GIANT")
+ZOMBIE = Entity(54, "ZOMBIE")
+SLIME = Entity(55, "SLIME")
+GHAST = Entity(56, "GHAST")
+PIG_ZOMBIE = Entity(57, "PIG_ZOMBIE")
+ENDERMAN = Entity(58, "ENDERMAN")
+CAVE_SPIDER = Entity(59, "CAVE_SPIDER")
+SILVERFISH = Entity(60, "SILVERFISH")
+BLAZE = Entity(61, "BLAZE")
+MAGMA_CUBE = Entity(62, "MAGMA_CUBE")
+ENDER_DRAGON = Entity(63, "ENDER_DRAGON")
+WITHER = Entity(64, "WITHER")
+BAT = Entity(65, "BAT")
+WITCH = Entity(66, "WITCH")
+ENDERMITE = Entity(67, "ENDERMITE")
+GUARDIAN = Entity(68, "GUARDIAN")
+SHULKER = Entity(69, "SHULKER")
+PIG = Entity(90, "PIG")
+SHEEP = Entity(91, "SHEEP")
+COW = Entity(92, "COW")
+CHICKEN = Entity(93, "CHICKEN")
+SQUID = Entity(94, "SQUID")
+WOLF = Entity(95, "WOLF")
+MUSHROOM_COW = Entity(96, "MUSHROOM_COW")
+SNOWMAN = Entity(97, "SNOWMAN")
+OCELOT = Entity(98, "OCELOT")
+IRON_GOLEM = Entity(99, "IRON_GOLEM")
+HORSE = Entity(100, "HORSE")
+RABBIT = Entity(101, "RABBIT")
+POLAR_BEAR = Entity(102, "POLAR_BEAR")
+LLAMA = Entity(103, "LLAMA")
+LLAMA_SPIT = Entity(104, "LLAMA_SPIT")
+PARROT = Entity(105, "PARROT")
+VILLAGER = Entity(120, "VILLAGER")
+ENDER_CRYSTAL = Entity(200, "ENDER_CRYSTAL")

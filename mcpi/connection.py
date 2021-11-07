@@ -8,6 +8,7 @@ import base64
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import dh
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+
 from cryptography.fernet import Fernet
 
 """ @author: Aron Nieminen, Mojang AB"""
@@ -29,31 +30,42 @@ class Connection:
         # Generate some parameters. These can be reused.
         parameters = dh.generate_parameters(generator=2, key_size=2048)
         # Generate a private key for use in the exchange.
-        p = parameters.parameter_numbers().p # the prime modulus value
-        g = parameters.parameter_numbers().g # the generator value (must be 2 or greater)
-        data = (p, g)
-        b = int(self.sendReceiveDH(b"client_hello", data)) # Server public value
+        p = parameters.parameter_numbers().p # The prime modulus value
+        g = parameters.parameter_numbers().g # The generator value (must be 2 or greater)
+        a_private_key = parameters.generate_private_key() # Client secret key
+        a = a_private_key.private_numbers().x # Client secret number
+        g_pow_a_mod_p = a_private_key.public_key().public_numbers().y # Client public number
+        data = (p, g, g_pow_a_mod_p)
 
-        a_private_key = parameters.generate_private_key() # Client secret number
-        a = a_private_key.private_numbers().x
+        b = int(self.sendReceive(b"dh_key_exchange", data)) # Server public value
+
         shared_key = pow(b, a, p)
 
-        g_pow_a_mod_p = a_private_key.public_key().public_numbers().y
-
-        self.sendDH(b"client_key_exchange", g_pow_a_mod_p)
-
-        print("Shared_key is " + str(shared_key))
-
-        # Reduce the length of the shared key from DH using SHA-256
+        # SHA256 to make the length of the shared key most optimal
         digest = hashes.Hash(hashes.SHA256())
         digest.update(str(shared_key).encode())
         symmetric_key = digest.finalize()
 
-        # print("Shared_key_bytes are" + str(symmetric_key))
-
-        print(base64.urlsafe_b64encode(symmetric_key))
-
         self.shared_key = base64.urlsafe_b64encode(symmetric_key)
+
+        
+
+        # server_msg = self.sendReceive(b"chat.post", "hello")
+        # print(server_msg)
+
+        # self.sendReceiveDH(b"client_key_exchange", g_pow_a_mod_p)
+
+        # # Reduce the length of the shared key from DH using SHA-256
+        
+
+        # # print("Shared_key_bytes are" + str(symmetric_key))
+
+        
+
+        
+
+
+        return self.shared_key
 
 
     def drain(self):
@@ -67,7 +79,7 @@ class Connection:
             e += "Last Message: <%s>\n"%self.lastSent.strip()
             sys.stderr.write(e)
 
-    def send(self, f, *data):
+    def sendEncrypted(self, f, *data):
         """
         Sends data. Note that a trailing newline '\n' is added here
 
@@ -78,25 +90,12 @@ class Connection:
 
         
 
-        s = b"".join([f, b"(", flatten_parameters_to_bytestring(data), b")", b"\n"])
+        s = b"".join([f, b"(", flatten_parameters_to_bytestring(data), b")", b"39490830", b"\n"])
 
         f = Fernet(self.shared_key)
         token = f.encrypt(s)
 
         self._send(token)
-
-    def sendDH(self, f, *data):
-         """
-         Sends data. Note that a trailing newline '\n' is added here
- 
-         The protocol uses CP437 encoding - https://en.wikipedia.org/wiki/Code_page_437
-         which is mildly distressing as it can't encode all of Unicode.
-         """
-
-         s = b"".join([f, b"(", flatten_parameters_to_bytestring(data), b")", b"\n"])
-         self._send(s)
-
-        
 
     def _send(self, s):
         """
@@ -115,12 +114,31 @@ class Connection:
             raise RequestError("%s failed"%self.lastSent.strip())
         return s
 
-    def sendReceive(self, *data):
+    def receiveEncryptedMsg(self):
+        """Receives data. Note that the trailing newline '\n' is trimmed"""
+        self.socket.settimeout(50)
+        print(self.socket.recv(4096))
+
+    def sendReceiveEncrypted(self, f, *data):
         """Sends and receive data"""
-        self.send(*data)
+        self.sendEncrypted(f, *data)
         return self.receive()
 
-    def sendReceiveDH(self, f, *data):
-        """Sends and receive data"""
-        self.sendDH(f, *data)
+    def send(self, f, *data):
+         """
+         Establishes a TLS 1.2 like connection (HelloClient, ClientKeyExchange) 
+         but mostly limited to the use of Diffie Hellman as the name suggests. 
+         """
+
+         s = b"".join([f, b"(", flatten_parameters_to_bytestring(data), b")", b"\n"])
+         self._send(s)
+
+    def sendReceive(self, f, *data):
+        """Sends any data needed to establish an initial connection and receive data from the sesrver"""
+        self.send(f, *data)
         return self.receive()
+
+    def sendReceiveMsg(self, f, *data):
+        """Sends and receive data"""
+        self.send(f, *data)
+        return self.receiveEncryptedMsg()
