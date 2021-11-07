@@ -4,3 +4,4 @@ using tools supplied by openssl module to encrypt and decrpyt.
 utalising the python and java crypto modules to encrypt and decrypt messages and generate a key.
 researching trade offs between different encryption/hash methodologies.
 researching tradeoffs with different key exchange protocols.
+use view raw to see in formatted.
