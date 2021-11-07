@@ -61,24 +61,6 @@ class Connection:
             e += "Last Message: <%s>\n"%self.lastSent.strip()
             sys.stderr.write(e)
 
-    # def sendEncrypted(self, f, *data):
-    #     """
-    #     Sends data. Note that a trailing newline '\n' is added here
-
-    #     The protocol uses CP437 encoding - https://en.wikipedia.org/wiki/Code_page_437
-    #     which is mildly distressing as it can't encode all of Unicode.
-    #     """
-    #     # Use the shared key from DH hasehd with SHA-256 to encrypt a message
-
-
-
-    #     s = b"".join([f, b"(", flatten_parameters_to_bytestring(data), b")", b"39490830", b"\n"])
-
-    #     f = Fernet(self.shared_key)
-    #     token = f.encrypt(s)
-
-    #     self._send(token)
-
     def _send(self, s):
         """
         The actual socket interaction from self.send, extracted for easier mocking
