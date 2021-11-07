@@ -348,8 +348,9 @@ public class RemoteSession {
 					// End Cal's code
 					
 					// Cal's code, rearrange the order of checks to take advantage of short-circut
-				} while ((b.compareTo(p) == 1) || (b.compareTo(p) == 0) || (b.compareTo(min_num) == -1)); // Ensure 1 < b < p
-				
+					// 
+				} while(!(p.compateTo(b) == 1) || (b.compareTo(min_num) == -1));
+				// OLD WHILE LOOP // while ((b.compareTo(p) == 1) || (b.compareTo(p) == 0) || (b.compareTo(min_num) == -1)); // Ensure 1 < b < p
 				// Creates a public value to send to the server
 				g_pow_b_mod_p = g.modPow(b, p);
 				
