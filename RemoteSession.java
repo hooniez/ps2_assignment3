@@ -329,14 +329,6 @@ public class RemoteSession {
 				// BigInteger q = new BigInteger(args[1]);
 				g = new BigInteger(args[1]); // the generator value (must be 2 or greater) 
 
-
-
-				// THIS CHECK MAY BE NEEDED, IS p always being sent as: p > 1
-				// // Cal's code
-				// // p should always be:  p > 1
-				// p = p.abs();
-				// // End Cal's code
-
 				// Generate a secret random number
 				byte b1[];
 				b1 = p.toByteArray();
