@@ -3,8 +3,8 @@
 This is the README file for Assignment 3 in Programming Studio 2 (COSC2804).
 
 
-# Report can be found:
-    Assignment_3_Report
+# Our Report can be found:
+ - Assignment_3_Report/Assignment_3_Report.pdf
 # Code
 # 1.The Raspberry Juice plugin changes, Located in
  - RaspberryJuice-master/
