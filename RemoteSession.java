@@ -324,36 +324,56 @@ public class RemoteSession {
 				server.broadcastMessage(chatMessage);
 
 			} else if (c.equals("client_hello")) {
-				p = new BigInteger(args[0]); // the prime modulus value
+
+				/***************************************************** OLD CODE */
+
+				// p = new BigInteger(args[0]); // the prime modulus value
 				
+				// // BigInteger q = new BigInteger(args[1]);
+				// g = new BigInteger(args[1]); // the generator value (must be 2 or greater) 
+
+				// // Generate a secret random number
+				// byte b1[];
+				// b1 = p.toByteArray();
+				// int length = b1.length;
+				 
+				// int min_num_int = 2;
+				// BigInteger min_num = BigInteger.valueOf(min_num_int);
+				
+				// do {
+				// 	byte bytes[] = new byte[length];
+				// 	random.nextBytes(bytes);
+				// 	b = new BigInteger(bytes);
+					
+				// 	// Cal's code
+				// 	// b should always be: b > 1
+				// 	b = b.abs();
+				// 	// End Cal's code
+					
+				// 	// Cal's code, rearrange the order of checks to take advantage of short-circut
+				// 	// 
+				// } while(!(p.compateTo(b) == 1) || (b.compareTo(min_num) == -1));
+				// // OLD WHILE LOOP // while ((b.compareTo(p) == 1) || (b.compareTo(p) == 0) || (b.compareTo(min_num) == -1)); // Ensure 1 < b < p
+				// // Creates a public value to send to the server
+				// g_pow_b_mod_p = g.modPow(b, p);
+				
+				// send(g_pow_b_mod_p);
+
+				//******************************* END OLD CODE ******/
+
+				p = new BigInteger(args[0]); // the prime modulus value
 				// BigInteger q = new BigInteger(args[1]);
 				g = new BigInteger(args[1]); // the generator value (must be 2 or greater) 
-
 				// Generate a secret random number
-				byte b1[];
-				b1 = p.toByteArray();
-				int length = b1.length;
-				 
-				int min_num_int = 2;
-				BigInteger min_num = BigInteger.valueOf(min_num_int);
-				
-				do {
-					byte bytes[] = new byte[length];
-					random.nextBytes(bytes);
-					b = new BigInteger(bytes);
-					
-					// Cal's code
-					// b should always be: b > 1
-					b = b.abs();
-					// End Cal's code
-					
-					// Cal's code, rearrange the order of checks to take advantage of short-circut
-					// 
-				} while(!(p.compateTo(b) == 1) || (b.compareTo(min_num) == -1));
+				byte bytes[] = new byte[16];
+				random.nextBytes(bytes);
+				b = new BigInteger(bytes);
+				// Change negative b Values
+				b = b.abs();
+
 				// OLD WHILE LOOP // while ((b.compareTo(p) == 1) || (b.compareTo(p) == 0) || (b.compareTo(min_num) == -1)); // Ensure 1 < b < p
 				// Creates a public value to send to the server
 				g_pow_b_mod_p = g.modPow(b, p);
-				
 				send(g_pow_b_mod_p);
 
 			} else if (c.equals("client_key_exchange")) {
